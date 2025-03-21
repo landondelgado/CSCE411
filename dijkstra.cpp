@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <queue>
 
 #define INF 999999
 
@@ -22,6 +23,39 @@ void printAdjMatrix() {
         }
         std::cout << std::endl;
     }
+}
+
+std::vector<int> dijkstra(int source){
+    std::vector<int> distances(22, INF);
+    distances[source] = 0;
+
+    // Using a priority queue with the greater argument to give 
+    // highest priority to the smallest element making it a min-queue
+    // The pairs are in the form of {distance, vertex}
+    std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, 
+    std::greater<std::pair<int, int>>> mq;
+    mq.push({0,source});
+
+    while(!mq.empty()){
+        // Process vertex with lowest distance
+        int currVertex = mq.top().second;
+        mq.pop();
+
+        for(int neighbor = 0; neighbor < 22; neighbor++){
+            // If neighbor found
+            if(adjMatrix[currVertex][neighbor] != INF){
+                int weight = adjMatrix[currVertex][neighbor];
+
+                // If distance can be improved update and push to queue
+                if(distances[currVertex] + weight < distances[neighbor]){
+                    distances[neighbor] = distances[currVertex] + weight;
+                    mq.push({distances[neighbor],neighbor});
+                }
+            }
+        }
+    }
+
+    return distances;
 }
 
 int main(){
@@ -65,6 +99,15 @@ int main(){
     addEdge(20, 22, 1);
 
     printAdjMatrix();
+
+    std::vector<int> distances = dijkstra(0);
+
+    std::cout << "Shortest Distance from 1->6 is: " << distances[5] << std::endl;
+    std::cout << "Shortest Distance from 1->8 is: " << distances[7] << std::endl;
+    std::cout << "Shortest Distance from 1->9 is: " << distances[8] << std::endl;
+    std::cout << "Shortest Distance from 1->15 is: " << distances[14] << std::endl;
+    std::cout << "Shortest Distance from 1->16 is: " << distances[15] << std::endl;
+    std::cout << "Shortest Distance from 1->22 is: " << distances[21] << std::endl;
 
     return 0;
 }
